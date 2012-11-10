@@ -1,51 +1,53 @@
 #tag Module
 Protected Module WebTools
-	#tag Method, Flags = &h1
-		Protected Function BuildLinks(InputString As String, Target As String = "_blank") As String
-		  ' this function accepts a string and will search for "http://" links in it. if there is, then replace it with a html <a></a> tag fully functional.
-		  ' this function is build by swort from the realsoftware user forums located at: http://forums.realsoftware.com/viewtopic.php?f=23&t=37332
+	#tag Method, Flags = &h0
+		Function Data(Extends Source As Picture) As Picture
+		  dim mask as new picture(source.width,source.height,32)
+		  mask.graphics.drawpicture(source.mask,0,0)
 		  
-		  Dim temp As String
-		  Dim wordarray(-1) As String
+		  source.mask.graphics.forecolor = &c000000
+		  source.mask.graphics.fillrect(0,0,source.width,source.height)
 		  
-		  if InputString <> "" Then
-		    
-		    wordarray = InputString.Split( " ")
-		    For each word as String in wordarray 
-		      ' look for http:// or www. in the word, if there is replace it.
-		      if word.InStr(0, "http://" ) > 0 Then
-		        'replace the text with a link, and a custom target append back to the string
-		        temp = temp + "<a href='" + word + "' target='" + Target +"'>" + word.Replace("http://", "") + "</a> "
-		        
-		      elseif word.InStr(0, "www.") > 0 Then
-		        'replace the text with a link, and a custom target append back to string
-		        temp = temp + "<a href='http://" + word + "' target='" + Target +"'>" + word.Replace("http://", "") + "</a> "
-		        
-		      else
-		        
-		        'get the word from the arry, put back in to the string.
-		        temp = temp + word +" "
-		        
-		      end if
-		      
-		    Next
-		    
-		  end if
+		  dim r as new picture(source.width,source.height,32)
+		  r.graphics.drawpicture(source,0,0)
 		  
-		  Return temp
+		  source.mask.graphics.drawpicture(mask,0,0)
+		  
+		  return r
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Resize(Extends Larger As Picture, Width As Integer, Height As Integer) As Picture
+		  Dim Smaller As New Picture(Width,Height,32)
+		  
+		  Smaller.Graphics.DrawPicture(Larger.Data,0,0,Smaller.Width,Smaller.Height,0,0,Larger.Width,Larger.Height)
+		  
+		  Smaller.Mask.Graphics.DrawPicture(Larger.Mask,0,0,Smaller.Width,Smaller.Height,0,0,Larger.Width,Larger.Height)
+		  
+		  Return Smaller
+		End Function
+	#tag EndMethod
 
-	#tag Note, Name = PLEASE READ FIRST
-		Initial release
-		
-		
-	#tag EndNote
-
-
-	#tag Constant, Name = Version, Type = String, Dynamic = False, Default = \"0.1.0", Scope = Protected
-	#tag EndConstant
+	#tag Method, Flags = &h0
+		Function StringToHexWT(src as string, Optional separator as string = "") As string
+		  dim n, L, v as integer
+		  dim s as string
+		  L = LenB(src)
+		  for n=1 to L
+		    v = AscB(MidB(src, n, 1))
+		    s = s + RightB("00"+Hex(v),2)+separator
+		  next
+		  return LeftB(s, LenB(s)-LenB(separator))
+		  
+		  ' function suggested by: "charonn0"
+		  
+		  ' function explanation: ( from "charonn0" )
+		  ' Here's one that I use whenever I need to compare the output of RB's MD5() function with a MD5 stored as hex (which is the most common representation)
+		  
+		  
+		End Function
+	#tag EndMethod
 
 
 	#tag ViewBehavior
