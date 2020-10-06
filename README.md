@@ -1,3 +1,5 @@
+ONLY FOR Xojo WEB 1.0
+
 WebTools
 ========
 
